@@ -1,0 +1,37 @@
+pipeline 
+{
+    agent any
+    
+    stages {
+        stage('Install Docker') {
+            steps {
+                sh ' sudo update && sudo install -y docker.io'
+            }
+        }
+        stage('Start Docker Service') {
+            steps {
+                sh 'service docker start'
+            }
+        }
+        stage('Check Docker Status') {
+            steps {
+                sh 'service docker status'
+            }
+        }
+        stage('Pull Nginx Image') {
+            steps {
+                script {
+                    dockerImage = docker.image('nginx')
+                    dockerImage.pull()
+                }
+            }
+        }
+        stage('Run Container') {
+            steps {
+                script {
+                    dockerContainer = dockerImage.run('-p 8000:80')
+                }
+            }
+        }
+    }
+}
